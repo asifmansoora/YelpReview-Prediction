@@ -21,9 +21,9 @@ def getPOSList(tokens,Noun=False,Adj = False):
         # to get all the words that are 'NN','NNP','NNS'
         for i in tagged:
                 
-                if Noun && i[1][0]=='N':
+                if Noun and i[1][0]=='N':
                         NounList.append(i[0])
-                if Adj && i[1][0]=='J':
+                if Adj and i[1][0]=='J':
                         AdjList.append(i[0])
                 
                         
@@ -49,4 +49,6 @@ def word_stemming(wordList,myStemmer):
 		wordList[i] =stem(word)
 	
 	return wordList
+
+
 

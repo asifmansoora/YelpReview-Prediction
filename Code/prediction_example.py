@@ -15,10 +15,12 @@ from sklearn.metrics import r2_score
 from nltk.stem import WordNetLemmatizer
 from nltk.collocations import* 
 from FormatText import * #external function file
+from ModelFunctions import *
+
 wordNetStemmer = WordNetLemmatizer()
 
 #Preprocessing data
-from sklearn import preprocessing
+
 from sklearn.cross_validation import KFold
 
 
@@ -27,13 +29,20 @@ from sklearn.cross_validation import KFold
 #################################################################################
 
 bCrossValidation = False
+kFold = 5
 bRunLiveYelpTest = False
 
 sTrainingFile = 'consolidated_yelp_training_data.csv'
 sTestingFile = 'consolidated_yelp_testing_data.csv'
 sValidatinFile = 'consolidated_yelp_validation_data.csv'
 
+n_neighbors = 10
 
+Regressor_Name = 'svr'
+#Regressor_Name = 'nusvr'
+#Regressor_Name = 'Gausian'
+#Regressor_Name = 'Nearest_Neighbors_uniform'
+#Regressor_Name = 'Nearest_Neighbors_distance'
  
 #################################################################################
 # LOADING TRAINING DATA
@@ -51,8 +60,12 @@ iCount = 0
 for line in trainfile:
     splitted = line.rstrip().split(',')
     
-    wordList =  getNounList(clean_review(splitted[1]))
-    print wordList
+    wordList =  clean_review(splitted[1])
+    #print wordList
+    
+    #wordList =  getPOSList(clean_review(splitted[1]),Noun=True)
+    splitted[1] = len(wordList)
+    
     # print word_stemming(wordList,wordNetStemmer)
     """
     if(iCount == 10):
@@ -61,13 +74,19 @@ for line in trainfile:
     continue
     """
     label = int(splitted[0])
-    features = [float(item) for item in splitted[1:]]
+    features = []
+    for item in splitted[1:30]:
+        if(item == 'NULL'):
+            features.append(item)
+        else:
+            features.append(float(item))
+
+        
+    #features = [if(item != 'NULL') float(item) for item in splitted[1:30]]
     y_train.append(label)
     X_train.append(features)
     
 trainfile.close()
-
-
 
 
 #After we have converted all of our feature into number we fill convert it into np format
@@ -85,40 +104,20 @@ X_train = np.array(X_train)
 # http://fseoane.net/blog/2012/learning-to-rank-with-scikit-learn-the-pairwise-transform/
 ###########################
  
-def transform_features_log(x):
-    return np.log(1+x)
-
-# To Convert into Scaled data that has zero mean and unit variance:
-def transform_features_standardize(x):
-    return preprocessing.scale(X)
 
 
-
-X_train = transform_features_log(X_train) 
+#X_train = transform_features_standardize(X_train) 
 
 
 ###############################################################################
 ### SELECT THE MODEL TO RUN
 ###############################################################################
 
-#run SVM
-#clf = svm.NuSVR()	
-#model = svm.SVR()
-#model = svm.SVC(kernel='linear')
-#model = GaussianProcess(corr='cubic', theta0=1e-2, thetaL=1e-4, thetaU=1e-1,random_start=100)
-
-"""n_neighbors = 14
-knn = neighbors.KNeighborsRegressor(n_neighbors, weights='uniform')
-knn = neighbors.KNeighborsRegressor(n_neighbors, weights='distance')
-"""
-#model.fit(X_train,y_train)
 
 
 
-
-model = linear_model.LogisticRegression(fit_intercept=True)
+model = SelectModel(Regressor_Name)
 model.fit(X_train,y_train)
-
 
 
 ###############################################################################
@@ -135,11 +134,17 @@ X_validation = []
 for line in validationfile:
     splitted = line.rstrip().split(',')
   
-    wordList = getNounList(clean_review(splitted[1]))
-    
+    wordList = clean_review(splitted[1])
+    splitted[1] = len(wordList)
   
     label = int(splitted[0])
-    features = [float(item) for item in splitted[1:]]
+    features = []
+    for item in splitted[1:30]:
+        if(item == 'NULL'):
+            features.append(item)
+        else:
+            features.append(float(item))
+    #features = [float(item) for item in splitted[1:]]
     #B_features = [float(item) for item in splitted[12:]]
     y_validation.append(label)
     X_validation.append(features)
@@ -163,18 +168,20 @@ y_predict = model.predict(X_validation)
 ###############################################################################
 # CALCULATING ACCURACY OF THE MODEL
 ###############################################################################
+    
+
  
 print "Mean Square Error on Validation data is: ",mean_squared_error(y_validation,y_predict)
-print "R square error is: ",r2_score(y_true, y_pred)                           
+print "R square error is: ",r2_score(y_validation, y_predict)                           
+print "Root Mean Square Log Error: ", calculate_RMSLE(y_validation, y_predict) 
 
-
+1/0
 #Cross-Validation: evaluating estimator performance
 if(bCrossValidation):
-                kf = KFold(len(Y), k=2, indices=True, shuffle =True)
+    print "Cross Validation: RMSLE is: ",RunCrossValidation(X_train,y_train,Regressor_Name,kFold)," after ",kFold," iteration"
+               
                 
                 
-
-
 ###############################################################################
 # READING TEST DATA
 ###############################################################################
@@ -198,7 +205,7 @@ X_test = np.array(X_test)
 # TRANSFORMING THE FEATURES 
 ###############################################################################
 
-X_test = transform_features_log(X_test)
+X_test = transform_features_standardize(X_test)
 
 
 
