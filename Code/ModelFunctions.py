@@ -39,3 +39,26 @@ def transform_features_log(x):
 def transform_features_standardize(x):
     return preprocessing.scale(x)
 
+def RunCrossValidation(X, Y, modelName,k):
+
+    listOfError = []
+    kf = KFold(len(Y), k, shuffle =True)
+    for train_index, test_index in kf:
+        
+        #print "TRAIN:", train_index, "TEST:", test_index
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = Y[train_index], Y[test_index]
+        
+        model = SelectModel(regressor)
+        model.fit(X_train,y_train)
+        y_predict = model.predict(X_test)
+        error = calculate_RMSLE(y_test,y_predict)
+        listOfError.append(error)
+
+    listOfError = np.array(listOfError)
+    return np.mean(listOfError)
+
+
+
+
+

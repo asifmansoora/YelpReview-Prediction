@@ -15,6 +15,8 @@ from sklearn.metrics import r2_score
 from nltk.stem import WordNetLemmatizer
 from nltk.collocations import* 
 from FormatText import * #external function file
+from ModelFunctions import *
+
 wordNetStemmer = WordNetLemmatizer()
 
 #Preprocessing data
@@ -27,6 +29,7 @@ from sklearn.cross_validation import KFold
 #################################################################################
 
 bCrossValidation = False
+kFold = 5
 bRunLiveYelpTest = False
 
 sTrainingFile = 'consolidated_yelp_training_data.csv'
@@ -175,14 +178,8 @@ print "Root Mean Square Log Error: ", calculate_RMSLE(y_validation, y_predict)
 1/0
 #Cross-Validation: evaluating estimator performance
 if(bCrossValidation):
-                kf = KFold(len(Y), k=5, shuffle =True)
-                for train_index, test_index in kf:
-                    #print "TRAIN:", train_index, "TEST:", test_index
-                    X_train, X_test = X_train[train_index], X_test[test_index]
-                    y_train, y_test = y_train[train_index], y_test[test_index]
-
-                
-                
+    print "Cross Validation: RMSLE is: ",RunCrossValidation(X_train,y_train,Regressor_Name,kFold)," after ",kFold," iteration"
+               
                 
                 
 ###############################################################################
