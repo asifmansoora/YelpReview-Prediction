@@ -12,6 +12,10 @@ from sklearn.gaussian_process import GaussianProcess
 from sklearn import neighbors
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from nltk.stem import WordNetLemmatizer
+from nltk.collocations import* 
+from FormatText import * #external function file
+wordNetStemmer = WordNetLemmatizer()
 
 #Preprocessing data
 from sklearn import preprocessing
@@ -23,7 +27,11 @@ from sklearn.cross_validation import KFold
 #################################################################################
 
 bCrossValidation = False
+bRunLiveYelpTest = False
 
+sTrainingFile = 'consolidated_yelp_training_data.csv'
+sTestingFile = 'consolidated_yelp_testing_data.csv'
+sValidatinFile = 'consolidated_yelp_validation_data.csv'
 
 
  
@@ -31,19 +39,29 @@ bCrossValidation = False
 # LOADING TRAINING DATA
 #################################################################################
  
-trainfile = open('consolidated_yelp_train_data_with_categories.csv')
+trainfile = open(sTrainingFile)
 header = trainfile.next().rstrip().split(',')
  
 y_train = []
 X_train = []
 
- 
+reviewData = []
+iCount = 0
+
 for line in trainfile:
     splitted = line.rstrip().split(',')
     
+    wordList =  getNounList(clean_review(splitted[1]))
+    print wordList
+    # print word_stemming(wordList,wordNetStemmer)
+    """
+    if(iCount == 10):
+        break
+    iCount = iCount +1
+    continue
+    """
     label = int(splitted[0])
-    features = [float(item) for item in splitted[1:]
-    #B_features = [float(item) for item in splitted[12:]]
+    features = [float(item) for item in splitted[1:]]
     y_train.append(label)
     X_train.append(features)
     
@@ -107,7 +125,7 @@ model.fit(X_train,y_train)
 # READING VALIDATION DATA
 ###############################################################################
 
-validationfile = open('consolidated_yelp_validation_data.csv')
+validationfile = open(sValidatinFile)
 headerValidation = validationfile.next().rstrip().split(',')
  
 y_validation = []
@@ -116,9 +134,12 @@ X_validation = []
  
 for line in validationfile:
     splitted = line.rstrip().split(',')
+  
+    wordList = getNounList(clean_review(splitted[1]))
     
+  
     label = int(splitted[0])
-    features = [float(item) for item in splitted[1:]
+    features = [float(item) for item in splitted[1:]]
     #B_features = [float(item) for item in splitted[12:]]
     y_validation.append(label)
     X_validation.append(features)
@@ -149,9 +170,8 @@ print "R square error is: ",r2_score(y_true, y_pred)
 
 #Cross-Validation: evaluating estimator performance
 if(bCrossValidation):
+                kf = KFold(len(Y), k=2, indices=True, shuffle =True)
                 
-
-
                 
 
 
@@ -159,7 +179,7 @@ if(bCrossValidation):
 # READING TEST DATA
 ###############################################################################
  
-testfile = open('test.csv')
+testfile = open(sTestingFile)
 #ignore the test header
 testfile.next()
  
