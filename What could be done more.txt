@@ -1,1 +1,4 @@
-1. Perason correlation coefficent 
+1. Pearson correlation coefficent 
+2. RMSLE
+3. Use Random Forest Regressor
+4. Generate features
