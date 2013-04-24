@@ -3,6 +3,7 @@ from sklearn import neighbors
 from sklearn import svm
 import numpy as np
 from sklearn import preprocessing
+import math
 
 ####################################################################################################
 ## MODEL FUNCTIONS
