@@ -40,6 +40,7 @@ def transform_features_log(x):
 def transform_features_standardize(x):
     return preprocessing.scale(x)
 
+
 def RunCrossValidation(X, Y, modelName,k):
 
     listOfError = []
@@ -58,8 +59,3 @@ def RunCrossValidation(X, Y, modelName,k):
 
     listOfError = np.array(listOfError)
     return np.mean(listOfError)
-
-
-
-
-

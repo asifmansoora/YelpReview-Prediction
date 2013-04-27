@@ -1,4 +1,6 @@
 1. Pearson correlation coefficent 
-2. RMSLE
+2. RMSLE (Done)
 3. Use Random Forest Regressor
 4. Generate features
+5. Dimension Reduction
+6. Sampling

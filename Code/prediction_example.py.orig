@@ -1,9 +1,19 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+ 
+#
+# written by Ferenc Huszár, PeerIndex
+ 
+=======
 
 # written by Rajnish, Dileep, Asif
 
 import time
 start_time = time.time()
 
+>>>>>>> 01511bf5c313037ab0321aee0c08d30effcec16a
 from sklearn import linear_model
 from sklearn.metrics import auc_score
 import numpy as np
@@ -81,8 +91,15 @@ for line in trainfile:
     reviewData.append(wordList)
     
 
+<<<<<<< HEAD
+    """
+    if(iCount == 10000):
+        break
+    iCount = iCount +1
+=======
+>>>>>>> 01511bf5c313037ab0321aee0c08d30effcec16a
     #continue
-    
+    """
     label = int(splitted[0])
     features = []
     for item in splitted[1:30]:
@@ -375,8 +392,14 @@ p_test = model.predict(X_test)
 ###############################################################################
 prediction = open("prediction.csv","w")
 prediction.write(str(("id,votes"+"\n")))
+<<<<<<< HEAD
+for i in p_test:
+    prediction.write(str((review_id[i]+","+str(i)+"\n")))
+=======
 for i,j in zip(review_id,p_test):
     prediction.write(str((i+","+str(j)+"\n")))
+>>>>>>> 01511bf5c313037ab0321aee0c08d30effcec16a
 prediction.close()
 
 
+	
