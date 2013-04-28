@@ -18,6 +18,7 @@ from FormatText import * #external function file
 from ModelFunctions import *
 from FormatFeatures import *
 from Text_Analysis import *
+from logger import *
 
 #Preprocessing data
 
@@ -60,7 +61,7 @@ y_train = []
 X_train = []
 
 reviewData = []
-iCount = 0
+iCount = 0 # calculates the number of sample 
 
 print "\t Time is: "+str(time.time()-start_time)
 print "LOADING THE TRAINING DATA"
@@ -263,12 +264,15 @@ print "\t Time is: "+str(time.time()-start_time)+"\n"
 # CALCULATING ACCURACY OF THE MODEL
 ###############################################################################
     
-
+RMSLE = calculate_RMSLE(y_validation, y_predict) 
+time_tak = time.time()-start_time
  
 print "Mean Square Error on Validation data is: ",mean_squared_error(y_validation,y_predict)
 print "R square error is: ",r2_score(y_validation, y_predict)                           
-print "Root Mean Square Log Error: ", calculate_RMSLE(y_validation, y_predict) 
+print "Root Mean Square Log Error: ", RMSLE 
 
+# logging the result - Asif
+logg_result(Regressor_Name,iCount,RMSLE, time_tak)
 
 #Cross-Validation: evaluating estimator performance
 if(bCrossValidation):
